@@ -55,7 +55,12 @@ class Downloader:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download m3u8 file from given url")
-    parser.add_argument("url")
+    parser.add_argument("--url", dest="url")
+    parser.add_argument("--file-name", dest="fileName")
     args = parser.parse_args()
+    fileName = args.fileName
     url = args.url
-    Downloader.download(url)
+    if url:
+        Downloader.download(url)
+    if fileName:
+        download_mp4(fileName)
