@@ -1,10 +1,13 @@
 #!./env/bin/python3
 
 import urllib.request
+import requests
+from bs4 import BeautifulSoup
 import shutil
 import os
 import re
 import argparse
+from fake_browser import FakeBrowser
 
 
 def download_m3u8_file(url, file_name):
@@ -52,6 +55,22 @@ class Downloader:
         add_home_url_to_m3u8_file(homeUrl, fileName)
         download_mp4(fileName)
 
+    @staticmethod
+    def get_page_source(link):
+        fakeBrowser = FakeBrowser(headless=True)
+        netData = fakeBrowser.get_net_data(link)
+        filtered = filter(
+            lambda entry: entry["initiatorType"] == "xmlhttprequest"
+            and entry["nextHopProtocol"] == "http/1.1",
+            netData,
+        )
+        url = filter(
+            lambda url: ".ts" not in url,
+            list(map(lambda entry: entry["name"], filtered)),
+        )
+        print(list(url))
+        fakeBrowser.close()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download m3u8 file from given url")
@@ -60,7 +79,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     fileName = args.fileName
     url = args.url
-    if url:
-        Downloader.download(url)
-    if fileName:
-        download_mp4(fileName)
+    Downloader.get_page_source(url)
+    # if url:
+    #     Downloader.download(url)
+    # if fileName:
+    #     download_mp4(fileName)
