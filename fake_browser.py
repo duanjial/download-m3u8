@@ -1,5 +1,6 @@
 import time
 from selenium import webdriver
+from fake_useragent import UserAgent
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
@@ -8,6 +9,7 @@ class FakeBrowser:
     def __init__(self, headless=False) -> None:
         self.headless = headless
         chrome_options = Options()
+        chrome_options.add_argument(f"user-agent={self._get_random_useragent()}")
         if self.headless:
             chrome_options.add_argument("--headless")
         self.driver = (
@@ -25,6 +27,10 @@ class FakeBrowser:
         scriptToExecute = 'var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntriesByType("resource") || {}; return network;'
         netData = self.driver.execute_script(scriptToExecute)
         return netData
+
+    def _get_random_useragent(self) -> str:
+        ua = UserAgent(verify_ssl=False)
+        return ua.random
 
     def _is_verification_needed(self, driver) -> bool:
         try:
