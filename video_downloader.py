@@ -1,6 +1,7 @@
 from fake_browser import FakeBrowser
 from util import Util
 import re
+import time
 
 
 class VideoDownloader:
@@ -9,16 +10,13 @@ class VideoDownloader:
 
     def download(self, link) -> None:
         if self.type == "bomb":
-            self._download_bomb(link)
+            url = self._get_request_url(link)
+            idx = url.index("?")
+            self._download_bomb_with_url(url[:idx])
         elif self.type == "youtube":
             self._download_youtube()
         else:
             raise Exception("Video type not supported yet")
-
-    def _download_bomb(self, link) -> None:
-        url = self._get_request_url(link)
-        idx = url.index("?")
-        self._download_bomb_with_url(url[:idx])
 
     def _get_request_url(self, link) -> str:
         fakeBrowser = FakeBrowser(headless=True)
