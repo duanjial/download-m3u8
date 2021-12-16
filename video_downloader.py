@@ -1,7 +1,6 @@
 from fake_browser import FakeBrowser
 from util import Util
 import re
-import time
 
 
 class VideoDownloader:
