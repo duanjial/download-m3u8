@@ -5,26 +5,26 @@ import time
 
 
 class VideoDownloader:
-    def __init__(self, type=None) -> None:
-        self.type = type
+    def __init__(self, video_type=None) -> None:
+        self.video_type = video_type
 
     def download(self, link) -> None:
-        if self.type == "bomb":
+        if self.video_type == "bomb":
             url = self._get_request_url(link)
             idx = url.index("?")
             self._download_bomb_with_url(url[:idx])
-        elif self.type == "youtube":
+        elif self.video_type == "youtube":
             self._download_youtube()
         else:
             raise Exception("Video type not supported yet")
 
     def _get_request_url(self, link) -> str:
-        fakeBrowser = FakeBrowser(headless=True)
-        netData = fakeBrowser.get_net_data(link)
+        fake_browser = FakeBrowser(headless=True)
+        net_data = fake_browser.get_net_data(link)
         filtered = filter(
             lambda entry: entry["initiatorType"] == "xmlhttprequest"
             and entry["nextHopProtocol"] == "http/1.1",
-            netData,
+            net_data,
         )
         urls = list(
             filter(
@@ -32,15 +32,15 @@ class VideoDownloader:
                 list(map(lambda entry: entry["name"], filtered)),
             )
         )
-        fakeBrowser.close()
+        fake_browser.close()
         return urls[0]
 
     def _download_bomb_with_url(self, url):
-        fileName = re.findall(r"\d+.m3u8", url)[0]
-        homeUrl = Util.get_home_url(url, fileName)
-        Util.download_m3u8_file(url, fileName)
-        Util.add_home_url_to_m3u8_file(homeUrl, fileName)
-        Util.download_mp4(fileName)
+        file_name = re.findall(r"\d+.m3u8", url)[0]
+        home_url = Util.get_home_url(url, file_name)
+        Util.download_m3u8_file(url, file_name)
+        Util.add_home_url_to_m3u8_file(home_url, file_name)
+        Util.download_mp4(file_name)
 
     def _download_youtube(self):
         pass

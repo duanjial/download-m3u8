@@ -24,9 +24,9 @@ class FakeBrowser:
         if is_verification_needed:
             self._click_link(self.driver)
         time.sleep(3)
-        scriptToExecute = 'var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntriesByType("resource") || {}; return network;'
-        netData = self.driver.execute_script(scriptToExecute)
-        return netData
+        script_to_execute = 'var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntriesByType("resource") || {}; return network;'
+        net_data = self.driver.execute_script(script_to_execute)
+        return net_data
 
     def _get_random_useragent(self) -> str:
         ua = UserAgent(verify_ssl=False)
@@ -36,16 +36,17 @@ class FakeBrowser:
         try:
             driver.find_element_by_xpath("/html/body/table/tbody/tr/td/b/font")
             return True
-        except NoSuchElementException as e:
-            print(f"{e}")
+        except NoSuchElementException as verify_exception:
+            print("No need to verify")
             return False
 
     def _click_link(self, driver) -> None:
         try:
             element = driver.find_element_by_xpath("/html/body/table/tbody/tr/td/a")
             element.click()
-        except NoSuchElementException as e:
-            print(f"{e}")
+        except NoSuchElementException as click_exception:
+            print(f"{click_exception}")
+            raise click_exception
 
     def close(self) -> None:
         self.driver.close()
