@@ -1,6 +1,7 @@
 from fake_browser import FakeBrowser
 from util import Util
 import re
+from exceptions import OverLimitException, VideoTypeNotSupportException
 
 
 class VideoDownloader:
@@ -10,12 +11,14 @@ class VideoDownloader:
     def download(self, link) -> None:
         if self.video_type == "bomb":
             url = self._get_request_url(link)
+            if not url:
+                raise OverLimitException("You are over the limit, please try again tomorrow!!")
             idx = url.index("?")
             self._download_bomb_with_url(url[:idx])
         elif self.video_type == "youtube":
             self._download_youtube()
         else:
-            raise Exception("Video type not supported yet")
+            raise VideoTypeNotSupportException("Video type not supported yet")
 
     def _get_request_url(self, link) -> str:
         fake_browser = FakeBrowser(headless=True)
@@ -32,7 +35,7 @@ class VideoDownloader:
             )
         )
         fake_browser.close()
-        return urls[0]
+        return urls[0] if urls else None
 
     def _download_bomb_with_url(self, url):
         file_name = re.findall(r"\d+.m3u8", url)[0]

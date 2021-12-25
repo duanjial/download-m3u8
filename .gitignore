@@ -4,3 +4,4 @@ env
 videos
 .vscode
 __pycache__
+.idea/

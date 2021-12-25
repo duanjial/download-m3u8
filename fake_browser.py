@@ -1,12 +1,15 @@
 import time
+import logging
 from selenium import webdriver
 from fake_useragent import UserAgent
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from exceptions import UnableToClickException
 
 
 class FakeBrowser:
     def __init__(self, headless=False) -> None:
+        self._logger = logging.getLogger()
         self.headless = headless
         chrome_options = Options()
         chrome_options.add_argument(f"user-agent={self._get_random_useragent()}")
@@ -37,16 +40,16 @@ class FakeBrowser:
             driver.find_element_by_xpath("/html/body/table/tbody/tr/td/b/font")
             return True
         except NoSuchElementException as verify_exception:
-            print("No need to verify")
+            self._logger.info("No need to verify")
             return False
 
     def _click_link(self, driver) -> None:
         try:
             element = driver.find_element_by_xpath("/html/body/table/tbody/tr/td/a")
             element.click()
-        except NoSuchElementException as click_exception:
-            print(f"{click_exception}")
-            raise click_exception
+        except NoSuchElementException as e:
+            self._logger.error(f"{e.msg}")
+            raise UnableToClickException("Unable to verify due to no element found to click")
 
     def close(self) -> None:
         self.driver.close()
