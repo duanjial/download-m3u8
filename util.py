@@ -1,6 +1,8 @@
 import urllib.request
 import shutil
+import threading
 import os
+import re
 
 
 class Util:
@@ -16,9 +18,16 @@ class Util:
     def download_mp4(file_name):
         if not os.path.exists("./videos"):
             os.makedirs("./videos")
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+        # os.system(
+        #     f"ffmpeg -hide_banner -loglevel error -stats -protocol_whitelist file,http,https,tcp,tls,crypto \
+        #         -progress block.txt -i ./tmp/{file_name} -c copy ./videos/{file_name[:-5]}.mp4"
+        # )
+        # While downloading, output to log for progress value as well
         os.system(
-            f"ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto \
-                -i ./tmp/{file_name} -c copy ./videos/{file_name[:-5]}.mp4"
+            f"ffmpeg -hide_banner -protocol_whitelist file,http,https,tcp,tls,crypto"
+            f" -i ./tmp/{file_name} -c copy ./videos/{file_name[:-5]}.mp4 1> ./logs/{file_name[:-5]}_log 2>&1"
         )
 
     @staticmethod
@@ -39,3 +48,24 @@ class Util:
     @staticmethod
     def get_home_url(url, file_name):
         return url.replace(file_name, "")
+
+    @staticmethod
+    def progress_bar_fn(progress_thread, log_file):
+        if not progress_thread.is_set():
+            if os.path.exists(log_file):
+                with open(log_file, "r") as file:
+                    duration_list = re.findall(r'Duration: \d{2}:\d{2}:\d{2}', file.read())
+                    if duration_list:
+                        duration = Util.get_duration(duration_list[0])
+            threading.Timer(1, Util.progress_bar_fn, [progress_thread, log_file]).start()
+
+    @staticmethod
+    def get_duration(duration):
+        time_list = [ele.strip() for ele in duration.split(":")][-3]
+        duration_in_sec = int(time_list[2])
+        if time_list[1]:
+            duration_in_sec += int(time_list[1]) * 60
+        if time_list[0]:
+            duration_in_sec += int(time_list[0]) * 60 * 60
+        print(duration_in_sec)
+        return duration_in_sec

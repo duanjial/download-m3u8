@@ -5,3 +5,4 @@ videos
 .vscode
 __pycache__
 .idea/
+logs/

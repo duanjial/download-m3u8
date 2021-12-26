@@ -3,6 +3,8 @@
 import argparse
 from util import Util
 import logging
+import threading
+from datetime import datetime
 from video_downloader import VideoDownloader
 from exceptions import OverLimitException, VideoTypeNotSupportException, UnableToClickException
 
@@ -32,6 +34,7 @@ if __name__ == "__main__":
         video_downloader = VideoDownloader(video_type=video_type)
         try:
             video_downloader.download(link)
+            logging.info("Finished downloading")
         except OverLimitException as e:
             logging.error(e.get_msg())
         except VideoTypeNotSupportException as e:
