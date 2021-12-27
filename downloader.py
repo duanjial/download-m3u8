@@ -6,7 +6,6 @@ import time
 from util import Util
 import logging
 import threading
-from datetime import datetime
 from video_downloader import VideoDownloader
 from exceptions import OverLimitException, VideoTypeNotSupportException, UnableToClickException
 
