@@ -32,11 +32,11 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %I:%M:%S %p',
                         level=logging.INFO)
+    logging.info("Start downloading")
     if link:
         video_downloader = VideoDownloader(video_type=video_type)
         try:
             video_downloader.download(link)
-            logging.info("Finished downloading")
         except OverLimitException as e:
             logging.error(e.get_msg())
         except VideoTypeNotSupportException as e:
@@ -44,7 +44,6 @@ if __name__ == "__main__":
         except UnableToClickException as e:
             logging.error(e.get_msg())
     if fileName:
-        logging.info("Start downloading")
         progress_bar_thread = threading.Event()
         Util.progress_bar_fn(progress_bar_thread, f"./logs/{fileName[:-5]}_log")
         Util.download_mp4(fileName)

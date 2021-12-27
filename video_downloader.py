@@ -17,7 +17,6 @@ class VideoDownloader:
             if not url:
                 raise OverLimitException("You are over the limit, please try again tomorrow!!")
             idx = url.index("?")
-            self._logger.info("Start downloading")
             self._download_bomb_with_url(url[:idx])
         elif self.video_type == "youtube":
             self._download_youtube()
@@ -50,7 +49,6 @@ class VideoDownloader:
         Util.progress_bar_fn(progress_bar_thread, f"./logs/{file_name[:-5]}_log")
         Util.download_mp4(file_name)
         progress_bar_thread.set()
-        logging.info("Another thread finished")
 
     def _download_youtube(self):
         pass

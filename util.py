@@ -64,10 +64,12 @@ class Util:
                     if raw_time:
                         raw_time_in_sec = Util.get_duration(raw_time[-1].split("=")[1])
                 if duration and raw_time_in_sec:
-                    percentage = round((raw_time_in_sec / duration) * 100)
-                    # print(f"{percentage}%")
                     Util.print_progress_bar(
                         raw_time_in_sec, duration, prefix="Progress", suffix="Complete", length=50
+                    )
+                else:
+                    Util.print_progress_bar(
+                        raw_time_in_sec, 1, prefix="Progress", suffix="Complete", length=50
                     )
             threading.Timer(1, Util.progress_bar_fn, [progress_thread, log_file]).start()
         else:
