@@ -40,7 +40,6 @@ class FakeBrowser:
             driver.find_element_by_xpath("/html/body/table/tbody/tr/td/b/font")
             return True
         except NoSuchElementException as verify_exception:
-            self._logger.info("No need to verify")
             return False
 
     def _click_link(self, driver) -> None:
