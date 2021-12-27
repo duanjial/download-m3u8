@@ -27,7 +27,9 @@ class FakeBrowser:
         if is_verification_needed:
             self._click_link(self.driver)
         time.sleep(3)
-        script_to_execute = 'var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntriesByType("resource") || {}; return network;'
+        script_to_execute = 'var performance = window.performance || window.mozPerformance || window.msPerformance ' \
+                            '|| window.webkitPerformance || {}; ' \
+                            'var network = performance.getEntriesByType("resource") || {}; return network;'
         net_data = self.driver.execute_script(script_to_execute)
         return net_data
 
