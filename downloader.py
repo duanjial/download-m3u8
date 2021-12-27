@@ -1,6 +1,8 @@
 #!./env/bin/python3
 
 import argparse
+import time
+
 from util import Util
 import logging
 import threading
@@ -47,4 +49,5 @@ if __name__ == "__main__":
         Util.progress_bar_fn(progress_bar_thread, f"./logs/{fileName[:-5]}_log")
         Util.download_mp4(fileName)
         progress_bar_thread.set()
-    # logging.info("Finished downloading")
+    time.sleep(1)
+    logging.info("Finished downloading")
