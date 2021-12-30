@@ -35,6 +35,9 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %I:%M:%S %p',
                         level=logging.INFO)
+    if video_type == 'youtube' and not youtube_file_name:
+        logging.error("youtube-file-name is needed for youtube download")
+        exit(1)
     logging.info("Start downloading")
     if link:
         video_downloader = VideoDownloader(video_type=video_type, youtube_file_name=youtube_file_name)
