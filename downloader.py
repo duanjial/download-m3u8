@@ -18,6 +18,9 @@ if __name__ == "__main__":
         "--file-name", dest="fileName", help="[Optional]: file name from tmp folder"
     )
     parser.add_argument(
+        "--youtube-file-name", dest="youtube_file_name", help="Youtube temp file name"
+    )
+    parser.add_argument(
         "--type",
         dest="video_type",
         required=True,
@@ -26,6 +29,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     fileName = args.fileName
+    youtube_file_name = args.youtube_file_name
     link = args.link
     video_type = args.video_type
     logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s',
@@ -33,7 +37,7 @@ if __name__ == "__main__":
                         level=logging.INFO)
     logging.info("Start downloading")
     if link:
-        video_downloader = VideoDownloader(video_type=video_type)
+        video_downloader = VideoDownloader(video_type=video_type, youtube_file_name=youtube_file_name)
         try:
             video_downloader.download(link)
         except OverLimitException as e:

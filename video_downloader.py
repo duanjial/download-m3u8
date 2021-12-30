@@ -1,15 +1,20 @@
+import os.path
+
 from fake_browser import FakeBrowser
 from util import Util
 import logging
 import threading
 import re
+from pytube import YouTube, Playlist
 from exceptions import OverLimitException, VideoTypeNotSupportException
 
 
 class VideoDownloader:
-    def __init__(self, video_type=None) -> None:
+    def __init__(self, video_type=None, youtube_file_name=None, directory=None) -> None:
         self._logger = logging.getLogger()
         self.video_type = video_type
+        self._youtube_file_name = youtube_file_name
+        self._directory = directory
 
     def download(self, link) -> None:
         if self.video_type == "bomb":
@@ -19,7 +24,7 @@ class VideoDownloader:
             idx = url.index("?")
             self._download_bomb_with_url(url[:idx])
         elif self.video_type == "youtube":
-            self._download_youtube()
+            self._download_youtube(link, self._directory)
         else:
             raise VideoTypeNotSupportException("Video type not supported yet")
 
@@ -28,7 +33,7 @@ class VideoDownloader:
         net_data = fake_browser.get_net_data(link)
         filtered = filter(
             lambda entry: entry["initiatorType"] == "xmlhttprequest"
-            and entry["nextHopProtocol"] == "http/1.1",
+                          and entry["nextHopProtocol"] == "http/1.1",
             net_data,
         )
         urls = list(
@@ -50,5 +55,27 @@ class VideoDownloader:
         Util.download_mp4(file_name)
         progress_bar_thread.set()
 
-    def _download_youtube(self):
-        pass
+    def _download_youtube(self, url, directory=None):
+        yt = YouTube(url, on_progress_callback=Util.progress_function)
+        video = (
+            yt.streams.filter(file_extension="mp4", type="video", adaptive=True).order_by("resolution").desc().first()
+        )
+        audio = yt.streams.filter(file_extension="mp4", type="audio").first()
+        title = yt.title
+        if ".mp4" not in self._youtube_file_name:
+            self._youtube_file_name = self._youtube_file_name + ".mp4"
+        self._logger.info(f"Start downloading {title} Audio")
+        if not os.path.exists("./audio"):
+            os.makedirs("./audio")
+        audio.download(output_path="./audio", filename=self._youtube_file_name)
+        self._logger.info(f"Finish downloading {title} Audio")
+        self._logger.info(f"Start downloading {title} Video")
+        if not os.path.exists("./video"):
+            os.makedirs("./video")
+        video.download(output_path="./video", filename=self._youtube_file_name)
+        self._logger.info(f"Finish downloading {title} Video")
+
+        self._logger.info("Start combining:")
+        Util.combine_video(self._youtube_file_name, title, directory)
+        self._logger.info(f"Finish combining {title}.mp4")
+        Util.delete_file(self._youtube_file_name)

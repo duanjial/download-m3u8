@@ -6,3 +6,6 @@ videos
 __pycache__
 .idea/
 logs/
+audio/
+video/
+youtube_output/

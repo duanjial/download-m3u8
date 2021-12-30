@@ -31,6 +31,38 @@ class Util:
         )
 
     @staticmethod
+    def combine_video(filename, title, directory):
+        if not os.path.exists("./youtube_output"):
+            os.mkdir("./youtube_output")
+        if directory is None:
+            os.system(
+                f"ffmpeg -loglevel warning -i ./video/{filename} \
+                    -i ./audio/{filename} -c copy ./youtube_output/{filename}.mp4"
+            )
+            os.system(f'mv ./youtube_output/{filename}.mp4 ./youtube_output/"{title}".mp4')
+        else:
+            os.system(
+                f"ffmpeg -loglevel warning -i ./video/{filename}.mp4 \
+                    -i ./audio/{filename}.mp4 \
+                        -c copy ./youtube_output/{directory}/{filename}.mp4"
+            )
+            os.system(
+                f'mv ./youtube_output/{directory}/{filename}.mp4 \
+                ./youtube_output/{directory} /"{title}".mp4'
+            )
+
+    @staticmethod
+    def delete_file(filename):
+        os.system(f"rm ./audio/{filename} ./video/{filename}")
+
+    @staticmethod
+    def progress_function(stream, chunk, bytes_remaining):
+        iteration = stream.filesize - bytes_remaining
+        Util.print_progress_bar(
+            iteration, stream.filesize, prefix="Progress", suffix="Complete", length=50
+        )
+
+    @staticmethod
     def add_home_url_to_m3u8_file(home_url, file_name):
         with open(os.path.join("./tmp", file_name), "r") as file:
             lines = file.readlines()
