@@ -21,8 +21,13 @@ class VideoDownloader:
             url = self._get_request_url(link)
             if not url:
                 raise OverLimitException("You are over the limit, please try again tomorrow!!")
-            idx = url.index("?")
-            self._download_bomb_with_url(url[:idx])
+            self._logger.info(f"Download from url: {url}")
+            try:
+                idx = url.index("?")
+                self._download_bomb_with_url(url[:idx])
+            except Exception as e:
+                self._logger.info("No ? mark found, use url directly")
+                self._download_bomb_with_url(url)
         elif self.video_type == "youtube":
             self._download_youtube(link, self._directory)
         else:
