@@ -17,14 +17,22 @@ class VideoDownloader:
         self._directory = directory
 
     def download(self, link) -> None:
+        success = False
+        count = 0
+        url = None
         if self.video_type == "bomb":
-            url = self._get_request_url(link)
-            if not url:
+            while not success and count < 5:
+                url = self._get_request_url(link)
+                count += 1
+                if url:
+                    success = True
+            if not success and count == 5:
                 raise OverLimitException("You are over the limit, please try again tomorrow!!")
             self._logger.info(f"Download from url: {url}")
             try:
-                idx = url.index("?")
-                self._download_bomb_with_url(url[:idx])
+                if url:
+                    idx = url.index("?")
+                    self._download_bomb_with_url(url[:idx])
             except Exception as e:
                 self._logger.info("No ? mark found, use url directly")
                 self._download_bomb_with_url(url)
