@@ -24,6 +24,7 @@ class VideoDownloader:
             while not success and count < 5:
                 url = self._get_request_url(link)
                 count += 1
+                self._logger.info(f"{count} try")
                 if url:
                     success = True
             if not success and count == 5:
